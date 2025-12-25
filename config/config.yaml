@@ -21,8 +21,10 @@ sync_rules:
     bucket_definitions:
       global:
         data:
-          - SELECT * FROM lists
-          - SELECT * FROM todos
+          - SELECT * FROM member
+          - SELECT * FROM family
+          - SELECT * FROM task_list
+          - SELECT * FROM task
 
 # Settings for client authentication
 client_auth:
