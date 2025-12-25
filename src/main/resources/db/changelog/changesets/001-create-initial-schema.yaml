@@ -1,0 +1,447 @@
+databaseChangeLog:
+  # ============================================
+  # FAMILY TABLE
+  # ============================================
+  - changeSet:
+      id: 001-create-family-table
+      author: familymind
+      changes:
+        - createTable:
+            tableName: family
+            columns:
+              # Primary Key (from BaseAuditEntity)
+              - column:
+                  name: id
+                  type: UUID
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              
+              # Family specific fields
+              - column:
+                  name: name
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: color_code
+                  type: VARCHAR(7)
+              - column:
+                  name: subscription_end_date
+                  type: DATE
+              - column:
+                  name: place_of_living
+                  type: VARCHAR(255)
+              - column:
+                  name: residence_type
+                  type: VARCHAR(100)
+              - column:
+                  name: family_image
+                  type: VARCHAR(500)
+              
+              # Audit fields (from BaseAuditEntity)
+              - column:
+                  name: created_at
+                  type: TIMESTAMP WITH TIME ZONE
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated_at
+                  type: TIMESTAMP WITH TIME ZONE
+                  constraints:
+                    nullable: false
+              - column:
+                  name: creator_id
+                  type: UUID
+              - column:
+                  name: updated_by
+                  type: UUID
+
+  # ============================================
+  # MEMBER TABLE
+  # ============================================
+  - changeSet:
+      id: 001-create-member-table
+      author: familymind
+      changes:
+        - createTable:
+            tableName: member
+            columns:
+              # Primary Key
+              - column:
+                  name: id
+                  type: UUID
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              
+              # Member specific fields
+              - column:
+                  name: name
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: email
+                  type: VARCHAR(255)
+              - column:
+                  name: password
+                  type: VARCHAR(255)
+              - column:
+                  name: is_google
+                  type: BOOLEAN
+                  defaultValueBoolean: false
+                  constraints:
+                    nullable: false
+              - column:
+                  name: is_apple
+                  type: BOOLEAN
+                  defaultValueBoolean: false
+                  constraints:
+                    nullable: false
+              - column:
+                  name: family_id
+                  type: UUID
+              - column:
+                  name: member_role
+                  type: VARCHAR(100)
+              - column:
+                  name: birth_date
+                  type: DATE
+              - column:
+                  name: color
+                  type: VARCHAR(7)
+              - column:
+                  name: image
+                  type: VARCHAR(500)
+              - column:
+                  name: is_verified
+                  type: BOOLEAN
+                  defaultValueBoolean: false
+                  constraints:
+                    nullable: false
+              
+              # Audit fields
+              - column:
+                  name: created_at
+                  type: TIMESTAMP WITH TIME ZONE
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated_at
+                  type: TIMESTAMP WITH TIME ZONE
+                  constraints:
+                    nullable: false
+              - column:
+                  name: creator_id
+                  type: UUID
+              - column:
+                  name: updated_by
+                  type: UUID
+
+  # ============================================
+  # TASK LIST TABLE
+  # ============================================
+  - changeSet:
+      id: 001-create-task-list-table
+      author: familymind
+      changes:
+        - createTable:
+            tableName: task_list
+            columns:
+              # Primary Key
+              - column:
+                  name: id
+                  type: UUID
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              
+              # TaskList specific fields
+              - column:
+                  name: family_id
+                  type: UUID
+                  constraints:
+                    nullable: false
+              - column:
+                  name: name
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: sort_by
+                  type: VARCHAR(50)
+                  defaultValue: custom
+              - column:
+                  name: last_activity_at
+                  type: TIMESTAMP WITH TIME ZONE
+              
+              # Audit fields
+              - column:
+                  name: created_at
+                  type: TIMESTAMP WITH TIME ZONE
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated_at
+                  type: TIMESTAMP WITH TIME ZONE
+                  constraints:
+                    nullable: false
+              - column:
+                  name: creator_id
+                  type: UUID
+              - column:
+                  name: updated_by
+                  type: UUID
+
+  # ============================================
+  # TASK TABLE
+  # ============================================
+  - changeSet:
+      id: 001-create-task-table
+      author: familymind
+      changes:
+        - createTable:
+            tableName: task
+            columns:
+              # Primary Key
+              - column:
+                  name: id
+                  type: UUID
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              
+              # Task specific fields
+              - column:
+                  name: title
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: description
+                  type: TEXT
+              - column:
+                  name: task_list_id
+                  type: UUID
+                  constraints:
+                    nullable: false
+              - column:
+                  name: is_completed
+                  type: BOOLEAN
+                  defaultValueBoolean: false
+                  constraints:
+                    nullable: false
+              - column:
+                  name: task_date
+                  type: DATE
+              - column:
+                  name: task_time
+                  type: TIME
+              - column:
+                  name: task_date_time
+                  type: TIMESTAMP WITH TIME ZONE
+              - column:
+                  name: recurrence_cron
+                  type: VARCHAR(255)
+              - column:
+                  name: recurring_parent_task_id
+                  type: UUID
+              - column:
+                  name: sub_task_of_id
+                  type: UUID
+              - column:
+                  name: position
+                  type: INTEGER
+              - column:
+                  name: assigned_to
+                  type: UUID
+              - column:
+                  name: assigned_by
+                  type: UUID
+              - column:
+                  name: assigned_at
+                  type: TIMESTAMP WITH TIME ZONE
+              - column:
+                  name: completed_by
+                  type: UUID
+              - column:
+                  name: completed_at
+                  type: TIMESTAMP WITH TIME ZONE
+              
+              # Audit fields
+              - column:
+                  name: created_at
+                  type: TIMESTAMP WITH TIME ZONE
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated_at
+                  type: TIMESTAMP WITH TIME ZONE
+                  constraints:
+                    nullable: false
+              - column:
+                  name: creator_id
+                  type: UUID
+              - column:
+                  name: updated_by
+                  type: UUID
+
+  # ============================================
+  # FOREIGN KEYS
+  # ============================================
+  - changeSet:
+      id: 001-add-foreign-keys
+      author: familymind
+      changes:
+        # Family audit foreign keys
+        - addForeignKeyConstraint:
+            baseTableName: family
+            baseColumnNames: creator_id
+            constraintName: fk_family_creator
+            referencedTableName: member
+            referencedColumnNames: id
+            onDelete: SET NULL
+        - addForeignKeyConstraint:
+            baseTableName: family
+            baseColumnNames: updated_by
+            constraintName: fk_family_updater
+            referencedTableName: member
+            referencedColumnNames: id
+            onDelete: SET NULL
+        
+        # Member foreign keys
+        - addForeignKeyConstraint:
+            baseTableName: member
+            baseColumnNames: family_id
+            constraintName: fk_member_family
+            referencedTableName: family
+            referencedColumnNames: id
+            onDelete: CASCADE
+        - addForeignKeyConstraint:
+            baseTableName: member
+            baseColumnNames: creator_id
+            constraintName: fk_member_creator
+            referencedTableName: member
+            referencedColumnNames: id
+            onDelete: SET NULL
+        - addForeignKeyConstraint:
+            baseTableName: member
+            baseColumnNames: updated_by
+            constraintName: fk_member_updater
+            referencedTableName: member
+            referencedColumnNames: id
+            onDelete: SET NULL
+        
+        # TaskList foreign keys
+        - addForeignKeyConstraint:
+            baseTableName: task_list
+            baseColumnNames: family_id
+            constraintName: fk_task_list_family
+            referencedTableName: family
+            referencedColumnNames: id
+            onDelete: CASCADE
+        - addForeignKeyConstraint:
+            baseTableName: task_list
+            baseColumnNames: creator_id
+            constraintName: fk_task_list_creator
+            referencedTableName: member
+            referencedColumnNames: id
+            onDelete: SET NULL
+        - addForeignKeyConstraint:
+            baseTableName: task_list
+            baseColumnNames: updated_by
+            constraintName: fk_task_list_updater
+            referencedTableName: member
+            referencedColumnNames: id
+            onDelete: SET NULL
+        
+        # Task foreign keys
+        - addForeignKeyConstraint:
+            baseTableName: task
+            baseColumnNames: task_list_id
+            constraintName: fk_task_task_list
+            referencedTableName: task_list
+            referencedColumnNames: id
+            onDelete: CASCADE
+        - addForeignKeyConstraint:
+            baseTableName: task
+            baseColumnNames: sub_task_of_id
+            constraintName: fk_task_parent_task
+            referencedTableName: task
+            referencedColumnNames: id
+            onDelete: CASCADE
+        - addForeignKeyConstraint:
+            baseTableName: task
+            baseColumnNames: assigned_to
+            constraintName: fk_task_assigned_to
+            referencedTableName: member
+            referencedColumnNames: id
+            onDelete: SET NULL
+        - addForeignKeyConstraint:
+            baseTableName: task
+            baseColumnNames: assigned_by
+            constraintName: fk_task_assigned_by
+            referencedTableName: member
+            referencedColumnNames: id
+            onDelete: SET NULL
+        - addForeignKeyConstraint:
+            baseTableName: task
+            baseColumnNames: completed_by
+            constraintName: fk_task_completed_by
+            referencedTableName: member
+            referencedColumnNames: id
+            onDelete: SET NULL
+        - addForeignKeyConstraint:
+            baseTableName: task
+            baseColumnNames: creator_id
+            constraintName: fk_task_creator
+            referencedTableName: member
+            referencedColumnNames: id
+            onDelete: SET NULL
+        - addForeignKeyConstraint:
+            baseTableName: task
+            baseColumnNames: updated_by
+            constraintName: fk_task_updater
+            referencedTableName: member
+            referencedColumnNames: id
+            onDelete: SET NULL
+
+  # ============================================
+  # INDEXES
+  # ============================================
+  - changeSet:
+      id: 001-create-indexes
+      author: familymind
+      changes:
+        # Member indexes
+        - createIndex:
+            tableName: member
+            indexName: idx_member_email
+            columns:
+              - column:
+                  name: email
+        - createIndex:
+            tableName: member
+            indexName: idx_member_family_id
+            columns:
+              - column:
+                  name: family_id
+        
+        # TaskList indexes
+        - createIndex:
+            tableName: task_list
+            indexName: idx_task_list_family_id
+            columns:
+              - column:
+                  name: family_id
+        
+        # Task indexes
+        - createIndex:
+            tableName: task
+            indexName: idx_task_list_completed
+            columns:
+              - column:
+                  name: task_list_id
+              - column:
+                  name: is_completed

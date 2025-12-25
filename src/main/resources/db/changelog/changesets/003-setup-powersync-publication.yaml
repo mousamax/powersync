@@ -1,0 +1,29 @@
+databaseChangeLog:
+  - changeSet:
+      id: 003-create-powersync-publication
+      author: familymind
+      comment: "Create 'powersync' publication for logical replication"
+      preConditions:
+        - onFail: MARK_RAN
+        - sqlCheck:
+            expectedResult: 0
+            sql: SELECT COUNT(*) FROM pg_publication WHERE pubname = 'powersync'
+      changes:
+        - sql:
+            sql: |
+              -- Create a publication to replicate specific tables
+              -- The publication MUST be named "powersync" for PowerSync to work
+              CREATE PUBLICATION powersync FOR TABLE family, member, task_list, task;
+        - rollback:
+            sql: DROP PUBLICATION IF EXISTS powersync;
+
+  - changeSet:
+      id: 003-add-comment-powersync-publication
+      author: familymind
+      comment: "Add comment to powersync publication"
+      changes:
+        - sql:
+            sql: |
+              COMMENT ON PUBLICATION powersync IS 'PowerSync logical replication publication for offline-first sync';
+      rollback:
+        - empty

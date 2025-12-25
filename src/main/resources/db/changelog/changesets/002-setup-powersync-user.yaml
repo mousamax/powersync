@@ -1,0 +1,56 @@
+databaseChangeLog:
+  - changeSet:
+      id: 002-verify-logical-replication
+      author: familymind
+      comment: "Verify that logical replication is enabled (wal_level = logical)"
+      preConditions:
+        - onFail: WARN
+        - sqlCheck:
+            expectedResult: logical
+            sql: SHOW wal_level
+      changes:
+        - sql:
+            comment: "Logical replication is already enabled"
+            sql: SELECT 1
+      rollback:
+        - empty
+
+  - changeSet:
+      id: 002-create-powersync-user
+      author: familymind
+      comment: "Create PowerSync database user with replication privileges"
+      preConditions:
+        - onFail: MARK_RAN
+        - sqlCheck:
+            expectedResult: 0
+            sql: SELECT COUNT(*) FROM pg_roles WHERE rolname = 'powersync_role'
+      changes:
+        - sql:
+            sql: |
+              -- Create a role/user with replication privileges for PowerSync
+              CREATE ROLE powersync_role WITH REPLICATION BYPASSRLS LOGIN PASSWORD 'powersync_secure_password_change_in_production';
+      rollback:
+        - sql:
+            sql: DROP ROLE IF EXISTS powersync_role;
+
+  - changeSet:
+      id: 002-grant-powersync-permissions
+      author: familymind
+      comment: "Grant SELECT permissions to PowerSync user on all tables"
+      changes:
+        - sql:
+            sql: |
+              -- Grant read-only (SELECT) access on all tables in public schema
+              GRANT SELECT ON ALL TABLES IN SCHEMA public TO powersync_role;
+              
+              -- Grant SELECT on all future tables (for schema additions)
+              ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT SELECT ON TABLES TO powersync_role;
+              
+              -- Grant USAGE on schema
+              GRANT USAGE ON SCHEMA public TO powersync_role;
+      rollback:
+        - sql:
+            sql: |
+              ALTER DEFAULT PRIVILEGES IN SCHEMA public REVOKE SELECT ON TABLES FROM powersync_role;
+              REVOKE SELECT ON ALL TABLES IN SCHEMA public FROM powersync_role;
+              REVOKE USAGE ON SCHEMA public FROM powersync_role;

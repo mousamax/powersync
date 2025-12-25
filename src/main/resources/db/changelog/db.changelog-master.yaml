@@ -1,0 +1,10 @@
+databaseChangeLog:
+  # Schema is managed by Liquibase for production-ready version control
+  # Hibernate validates that entities match the database schema
+  
+  - include:
+      file: db/changelog/changesets/001-create-initial-schema.yaml
+  - include:
+      file: db/changelog/changesets/002-setup-powersync-user.yaml
+  - include:
+      file: db/changelog/changesets/003-setup-powersync-publication.yaml

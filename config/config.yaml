@@ -1,7 +1,9 @@
 replication:
   connections:
     - type: postgresql
-      uri: postgresql://postgres:postgres@postgres:4321/postgres
+      # Use the PowerSync user with replication privileges
+      # In production, use environment variables for credentials
+      uri: postgresql://powersync_role:powersync_secure_password_change_in_production@postgres-powersync:4321/postgres
 
       # SSL settings
       sslmode: disable # 'verify-full' (default) or 'verify-ca' or 'disable'
