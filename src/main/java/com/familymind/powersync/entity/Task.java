@@ -36,9 +36,6 @@ public class Task extends BaseAuditEntity {
     @JoinColumn(name = "task_list_id", nullable = false, foreignKey = @ForeignKey(name = "fk_task_task_list"))
     private TaskList taskList;
 
-    @Column(name = "task_list_id", insertable = false, updatable = false)
-    private UUID taskListId;
-
     @Builder.Default
     @Column(name = "is_completed", nullable = false)
     private Boolean isCompleted = false;

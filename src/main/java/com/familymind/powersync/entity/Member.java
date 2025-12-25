@@ -4,7 +4,6 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDate;
-import java.util.UUID;
 
 /**
  * Entity representing a family member.
@@ -31,6 +30,9 @@ public class Member extends BaseAuditEntity {
     @Column(name = "email")
     private String email;
 
+    @Column(name = "password")
+    private String password;
+
     @Builder.Default
     @Column(name = "is_google", nullable = false)
     private Boolean isGoogle = false;
@@ -42,9 +44,6 @@ public class Member extends BaseAuditEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "family_id", nullable = true, foreignKey = @ForeignKey(name = "fk_member_family"))
     private Family family;
-
-    @Column(name = "family_id", insertable = false, updatable = false)
-    private UUID familyId;
 
     @Column(name = "member_role")
     private String memberRole;
