@@ -67,17 +67,20 @@ public class Task extends BaseAuditEntity {
     @Column(name = "position")
     private Integer position;
 
-    @Column(name = "assigned_to")
-    private UUID assignedTo;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "assigned_to")
+    private Member assignedTo;
 
-    @Column(name = "assigned_by")
-    private UUID assignedBy;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "assigned_by")
+    private Member assignedBy;
 
     @Column(name = "assigned_at")
     private ZonedDateTime assignedAt;
 
-    @Column(name = "completed_by")
-    private UUID completedBy;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "completed_by")
+    private Member completedBy;
 
     @Column(name = "completed_at")
     private ZonedDateTime completedAt;

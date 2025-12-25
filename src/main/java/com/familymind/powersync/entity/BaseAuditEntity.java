@@ -28,11 +28,13 @@ public abstract class BaseAuditEntity {
     @Column(name = "updated_at", nullable = false)
     private ZonedDateTime updatedAt;
 
-    @Column(name = "creator_id")
-    private UUID creatorId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "creator_id")
+    private Member createdBy;
 
-    @Column(name = "updated_by")
-    private UUID updatedBy;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "updated_by")
+    private Member updatedBy;
 
     @PrePersist
     protected void onCreate() {
@@ -40,15 +42,15 @@ public abstract class BaseAuditEntity {
         this.createdAt = now;
         this.updatedAt = now;
         // TODO: Get from Spring Security context when authentication is implemented
-        // this.creatorId = getCurrentUserId();
-        // this.updatedBy = getCurrentUserId();
+        // this.createdBy = getCurrentUser();
+        // this.updatedBy = getCurrentUser();
     }
 
     @PreUpdate
     protected void onUpdate() {
         this.updatedAt = ZonedDateTime.now();
         // TODO: Get from Spring Security context when authentication is implemented
-        // this.updatedBy = getCurrentUserId();
+        // this.updatedBy = getCurrentUser();
     }
 }
 
