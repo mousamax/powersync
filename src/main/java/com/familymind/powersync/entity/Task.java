@@ -33,7 +33,9 @@ public class Task extends BaseAuditEntity {
     private String description;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "task_list_id", nullable = false, foreignKey = @ForeignKey(name = "fk_task_task_list"))
+    @JoinColumn(name = "task_list_id", nullable = false,
+    foreignKey = @ForeignKey(name = "fk_task_task_list"),
+    referencedColumnName = "id")
     private TaskList taskList;
 
     @Builder.Default

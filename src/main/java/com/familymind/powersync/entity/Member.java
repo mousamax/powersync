@@ -42,7 +42,9 @@ public class Member extends BaseAuditEntity {
     private Boolean isApple = false;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "family_id", nullable = true, foreignKey = @ForeignKey(name = "fk_member_family"))
+    @JoinColumn(name = "family_id", nullable = true, 
+    foreignKey = @ForeignKey(name = "fk_member_family"),
+    referencedColumnName = "id")
     private Family family;
 
     @Column(name = "member_role")

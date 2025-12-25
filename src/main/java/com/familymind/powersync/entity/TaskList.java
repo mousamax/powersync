@@ -4,7 +4,6 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.ZonedDateTime;
-import java.util.UUID;
 
 /**
  * Entity representing a task list within a family.
@@ -25,11 +24,10 @@ import java.util.UUID;
 public class TaskList extends BaseAuditEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "family_id", nullable = false, foreignKey = @ForeignKey(name = "fk_task_list_family"))
+    @JoinColumn(name = "family_id", nullable = false,
+    foreignKey = @ForeignKey(name = "fk_task_list_family"),
+    referencedColumnName = "id")
     private Family family;
-
-    @Column(name = "family_id", insertable = false, updatable = false)
-    private UUID familyId;
 
     @Column(name = "name", nullable = false)
     private String name;
