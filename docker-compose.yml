@@ -4,7 +4,7 @@ services:
     depends_on:
       mongo-rs-init:
         condition: service_completed_successfully
-      postgres: # This is not required, but is nice to have
+      postgres-powersync: # This is not required, but is nice to have
         condition: service_healthy
     image: journeyapps/powersync-service:latest
     command: ["start", "-r", "unified"]
@@ -15,18 +15,18 @@ services:
     ports:
       - 8080:8080
 
-  postgres:
+  postgres-powersync:
     image: postgres:latest
     restart: always
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_DB=postgres
       - POSTGRES_PASSWORD=postgres
-      - PGPORT=5432
+      - PGPORT=4321
     volumes:
       - pg_data:/var/lib/postgresql/data
     ports:
-      - "5432:5432"
+      - "4321:4321"
     command: ["postgres", "-c", "wal_level=logical"]
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres -d postgres"]

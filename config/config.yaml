@@ -1,7 +1,7 @@
 replication:
   connections:
     - type: postgresql
-      uri: postgresql://postgres:postgres@postgres:5432/postgres
+      uri: postgresql://postgres:postgres@postgres:4321/postgres
 
       # SSL settings
       sslmode: disable # 'verify-full' (default) or 'verify-ca' or 'disable'
