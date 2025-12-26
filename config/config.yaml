@@ -30,11 +30,13 @@ sync_rules:
 
 # Settings for client authentication
 client_auth:
-  # Enable this if using Supabase Auth
-  supabase: false
-
-  # JWKS URIs can be specified here.
-  jwks_uri: [TODO]
+  # JWT configuration for HMAC (HS512)
+  jwks:
+    keys:
+      - kty: 'oct'
+        k: 'WW91clN1cGVyU2VjcmV0S2V5Rm9ySFM1MTJNVXN0QmVBdExlYXN0NjRCeXRlc0xvbmdGb3JTZWN1cml0eVB1cnBvc2VzMTIzNDU2Nzg5'
+        alg: 'HS512'
+        kid: 'powersync-hs512-key' # Must match the 'kid' in your JWT header exactly
 
   # JWKS audience
   audience: ['powersync-dev', 'powersync']
