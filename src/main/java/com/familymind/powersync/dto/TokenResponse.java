@@ -6,6 +6,5 @@ public record TokenResponse(
         String token,
         UUID memberId,
         UUID familyId,
-        String email,
         long expiresIn
 ) {}

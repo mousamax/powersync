@@ -35,7 +35,6 @@ public class AuthController {
                 token,
                 member.getId(),
                 familyId,
-                member.getEmail(),
                 86400000L
         ));
     }

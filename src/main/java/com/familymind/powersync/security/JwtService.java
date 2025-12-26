@@ -35,7 +35,6 @@ public class JwtService {
                 .subject(memberId.toString())
                 .claim("member_id", memberId.toString())
                 .claim("family_id", familyId != null ? familyId.toString() : null)
-                .claim("email", email)
                 .audience().add(audience).and()
                 .issuedAt(now)
                 .expiration(expiryDate)
