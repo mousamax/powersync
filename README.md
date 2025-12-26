@@ -35,7 +35,7 @@ This will automatically:
 - Create database schema via Liquibase
 - Set up PowerSync user with replication privileges
 - Create `powersync` publication for specified tables
-- Start REST API on port 8080 with:
+- Start REST API on port 5050 with:
   - `POST /api/auth/login` - Generate JWT tokens
   - `GET /api/auth/token/{memberId}` - Get JWT for member
   - `POST /api/powersync/write-checkpoint` - Handle client writes
@@ -53,7 +53,7 @@ docker-compose logs -f powersync
 ### 5. Get JWT Token for Testing
 ```bash
 # Get list of members
-curl http://localhost:8080/api/auth/token/{member-id}
+curl http://localhost:5050/api/auth/token/{member-id}
 ```
 
 ## Architecture
