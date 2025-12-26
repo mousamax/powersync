@@ -104,6 +104,7 @@ public class DataInitializer implements CommandLineRunner {
         Task task = Task.builder()
                 .title(title)
                 .description(description)
+                .family(taskList.getFamily())
                 .taskList(taskList)
                 .isCompleted(false)
                 .taskDate(LocalDate.now())

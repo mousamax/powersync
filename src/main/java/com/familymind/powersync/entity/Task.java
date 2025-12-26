@@ -33,6 +33,10 @@ public class Task extends BaseAuditEntity {
     private String description;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "family_id", nullable = false)
+    private Family family; // Direct reference to Family for powersync bucket rules. Need to keep family_id in sync if task moves lists!
+
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "task_list_id", nullable = false,
     foreignKey = @ForeignKey(name = "fk_task_task_list"),
     referencedColumnName = "id")
@@ -90,6 +94,10 @@ public class Task extends BaseAuditEntity {
     protected void updateTaskListActivity() {
         if (this.taskList != null) {
             this.taskList.setLastActivityAt(ZonedDateTime.now());
+            // Auto-sync family from task list if not set
+            if (this.family == null) {
+                this.family = this.taskList.getFamily();
+            }
         }
     }
 }

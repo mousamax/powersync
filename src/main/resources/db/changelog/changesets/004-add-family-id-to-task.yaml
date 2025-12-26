@@ -1,0 +1,66 @@
+databaseChangeLog:
+  # ============================================
+  # Add family_id to task table for PowerSync
+  # This enables direct family-based sync rules without nested queries
+  # ============================================
+  
+  - changeSet:
+      id: 004-add-family-id-column-to-task
+      author: familymind
+      comment: "Add family_id column to task table (nullable initially)"
+      changes:
+        - addColumn:
+            tableName: task
+            columns:
+              - column:
+                  name: family_id
+                  type: UUID
+                  remarks: "Direct reference to family for PowerSync bucket rules"
+
+  - changeSet:
+      id: 004-populate-task-family-id
+      author: familymind
+      comment: "Populate family_id from task_list.family_id for existing records"
+      changes:
+        - sql:
+            sql: |
+              UPDATE task 
+              SET family_id = tl.family_id
+              FROM task_list tl
+              WHERE task.task_list_id = tl.id
+              AND task.family_id IS NULL;
+
+  - changeSet:
+      id: 004-add-family-id-not-null-constraint
+      author: familymind
+      comment: "Make family_id NOT NULL after data population"
+      changes:
+        - addNotNullConstraint:
+            tableName: task
+            columnName: family_id
+            columnDataType: UUID
+
+  - changeSet:
+      id: 004-add-task-family-foreign-key
+      author: familymind
+      comment: "Add foreign key constraint for task.family_id"
+      changes:
+        - addForeignKeyConstraint:
+            baseTableName: task
+            baseColumnNames: family_id
+            constraintName: fk_task_family
+            referencedTableName: family
+            referencedColumnNames: id
+            onDelete: CASCADE
+
+  - changeSet:
+      id: 004-add-task-family-index
+      author: familymind
+      comment: "Add index on task.family_id for efficient queries"
+      changes:
+        - createIndex:
+            tableName: task
+            indexName: idx_task_family_id
+            columns:
+              - column:
+                  name: family_id
