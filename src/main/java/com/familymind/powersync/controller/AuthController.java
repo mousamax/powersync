@@ -35,7 +35,7 @@ public class AuthController {
                 token,
                 member.getId(),
                 familyId,
-                86400000L
+                3600000L
         ));
     }
 
@@ -51,8 +51,7 @@ public class AuthController {
                 token,
                 member.getId(),
                 familyId,
-                member.getEmail(),
-                86400000L
+                3600000L
         ));
     }
 }
