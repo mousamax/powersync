@@ -1,0 +1,26 @@
+databaseChangeLog:
+  - changeSet:
+      id: 005-create-powersync-storage-user
+      author: familymind
+      comment: "Create PowerSync storage user for sync buckets"
+      preConditions:
+        - onFail: MARK_RAN
+        - sqlCheck:
+            expectedResult: 0
+            sql: SELECT COUNT(*) FROM pg_roles WHERE rolname = 'powersync_storage_user'
+      changes:
+        - sql:
+            sql: |
+              -- Create user for PowerSync internal storage
+              CREATE ROLE powersync_storage_user WITH LOGIN PASSWORD 'powersync_secure_password_change_in_production';
+              
+              -- Grant permission to connect to the database
+              GRANT CONNECT ON DATABASE postgres TO powersync_storage_user;
+              
+              -- Grant permission to create schemas (PowerSync creates its own 'powersync' schema)
+              GRANT CREATE ON DATABASE postgres TO powersync_storage_user;
+      rollback:
+        - sql:
+            sql: |
+              REVOKE ALL PRIVILEGES ON DATABASE postgres FROM powersync_storage_user;
+              DROP ROLE IF EXISTS powersync_storage_user;

@@ -8,3 +8,7 @@ databaseChangeLog:
       file: db/changelog/changesets/002-setup-powersync-user.yaml
   - include:
       file: db/changelog/changesets/003-setup-powersync-publication.yaml
+  - include:
+      file: db/changelog/changesets/004-add-family-id-to-task.yaml
+  - include:
+      file: db/changelog/changesets/005-setup-powersync-storage-user.yaml
