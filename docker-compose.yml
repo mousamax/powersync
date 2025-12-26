@@ -2,8 +2,6 @@ services:
   powersync:
     restart: unless-stopped
     depends_on:
-      mongo-rs-init:
-        condition: service_completed_successfully
       postgres-powersync: # This is not required, but is nice to have
         condition: service_healthy
     image: journeyapps/powersync-service:latest
