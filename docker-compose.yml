@@ -16,7 +16,7 @@ services:
       - 8090:8090
 
   postgres-powersync:
-    image: postgres:latest
+    image: postgres:18
     restart: always
     environment:
       - POSTGRES_USER=postgres
@@ -24,7 +24,7 @@ services:
       - POSTGRES_PASSWORD=postgres
       - PGPORT=4321
     volumes:
-      - pg_data:/var/lib/postgresql/data
+      - powersync_pg_data:/var/lib/postgresql
     ports:
       - "4321:4321"
     command: ["postgres", "-c", "wal_level=logical"]
@@ -56,4 +56,4 @@ services:
 
 volumes:
   mongo_storage:
-  pg_data:
+  powersync_pg_data:
