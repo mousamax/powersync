@@ -35,6 +35,10 @@ This will automatically:
 - Create database schema via Liquibase
 - Set up PowerSync user with replication privileges
 - Create `powersync` publication for specified tables
+- Start REST API on port 8080 with:
+  - `POST /api/auth/login` - Generate JWT tokens
+  - `GET /api/auth/token/{memberId}` - Get JWT for member
+  - `POST /api/powersync/write-checkpoint` - Handle client writes
 
 ### 3. Start PowerSync Service
 ```bash
@@ -44,6 +48,12 @@ docker-compose up -d powersync
 ### 4. Verify Setup
 ```bash
 docker-compose logs -f powersync
+```
+
+### 5. Get JWT Token for Testing
+```bash
+# Get list of members
+curl http://localhost:8080/api/auth/token/{member-id}
 ```
 
 ## Architecture
@@ -66,6 +76,59 @@ docker-compose logs -f powersync
    - Creates `powersync` publication (required name)
    - Specifies tables to replicate
 
+### Client Authentication Flow
+
+```
+Mobile Client
+    ↓
+POST /api/auth/login (email, password)
+    ↓
+Returns JWT with {member_id, family_id} claims
+    ↓
+Client uses JWT to connect to PowerSync Service (port 8080)
+    ↓
+PowerSync validates JWT and syncs family-specific data
+```
+
+### Sync Rules (Family-Based Isolation)
+
+PowerSync syncs only data belonging to the user's family:
+- Each family gets a separate bucket
+- JWT `family_id` claim determines which bucket
+- Users only see their family's: members, task lists, tasks
+
+### Write Operations Flow
+
+```
+Mobile Client makes local changes
+    ↓
+Client SDK batches operations (PUT/PATCH/DELETE)
+    ↓
+POST /api/powersync/write-checkpoint
+    ↓
+Synchronously writes to PostgreSQL
+    ↓
+# JWT Authentication (HS512)
+client_auth:
+  jwks:
+    keys:
+      - kty: 'oct'
+        k: '<base64-encoded-secret>'
+        alg: 'HS512'
+  audience: ['powersync-dev']
+
+# Family-based sync rules
+sync_rules:
+  content: |
+    bucket_definitions:
+      family_data:
+        parameters: SELECT token.parameters->>'family_id' AS family_id
+        data:
+          - SELECT * FROM family WHERE id = bucket.family_id
+          - SELECT * FROM member WHERE family_id = bucket.family_id
+          - SELECT * FROM task_list WHERE family_id = bucket.family_id
+          - SELECT * FROM task WHERE task_list_id IN (...)
+
 ### Execution Flow
 
 ```
@@ -77,6 +140,10 @@ Liquibase Migrations
     └─ Create PowerSync publication
     ↓
 Hibernate Validates Schema
+    ↓
+REST Controllers Ready
+    ├─ /api/auth/** (JWT generation)
+    └─ /api/powersync/** (write checkpoint)
     ↓
 Application Ready
 ```
@@ -93,7 +160,18 @@ command: ["postgres", "-c", "wal_level=logical"]
 **Hibernate** ([application.properties](src/main/resources/application.properties))
 ```properties
 spring.jpa.hibernate.ddl-auto=validate
-spring.liquibase.enabled=true
+spring.lcontroller/          # REST endpoints
+│   │   ├── AuthController.java         # JWT token generation
+│   │   └── PowerSyncController.java    # Write checkpoint
+│   ├── security/            # JWT service
+│   │   └── JwtService.java
+│   ├── config/              # Security configuration
+│   │   └── SecurityConfig.java
+│   ├── dto/                 # Request/Response objects
+│   │   ├── LoginRequest.java
+│   │   ├── TokenResponse.java
+│   │   └── WriteCheckpointRequest.java
+│   ├── iquibase.enabled=true
 ```
 
 **PowerSync** ([config/config.yaml](config/config.yaml))
@@ -127,11 +205,46 @@ src/main/
 1. Create JPA entity
 2. Add Liquibase changeset for table structure
 3. Add table to PowerSync publication:
+JWT secret (current: default dev secret)
+- [ ] Change PowerSync user password (default: `powersync_secure_password_change_in_production`)
+- [ ] Use environment variables for all credentials
+- [ ] Enable SSL/TLS for database connections (`sslmode: verify-full`)
+- [ ] Implement password hashing and verification in AuthController
+- [ ] Add rate limiting on auth endpoints
+- [ ] Configure proper CORS policies (currently allows all origins)
+- [ ] Add request validation and family-based authorization
+- [ ] Configure proper backup and monitoring
+- [ ] Review publication scope (avoid `FOR ALL TABLES` with large datasets)
 
-```yaml
-- changeSet:
-    id: 00X-add-table-to-publication
-    changes:
+## API Endpoints
+
+### Authentication
+- `POST /api/auth/login` - Login with email/password (returns JWT)
+  ```json
+  {
+    "email": "john.smith@example.com",
+    "password": "password"
+  }
+  ```
+- `GET /api/auth/token/{memberId}` - Get JWT for member ID (dev only)
+
+### PowerSync
+- `POST /api/powersync/write-checkpoint` - Accept client write operations
+  ```json
+  {
+    "operations": [
+      {
+        "op": "PUT",
+        "table": "task",
+        "data": {
+          "id": "uuid",
+          "title": "New Task",
+          "task_list_id": "list-uuid"
+        }
+      }
+    ]
+  }
+  ```
       - sql:
           sql: ALTER PUBLICATION powersync ADD TABLE new_table;
 ```

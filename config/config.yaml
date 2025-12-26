@@ -18,15 +18,17 @@ port: 8080
 
 # Specify sync rules
 sync_rules:
-  # TODO use specific sync rules here
   content: |
     bucket_definitions:
-      global:
+      # Family-specific data bucket
+      family_data:
+        # Extract familyId from JWT token
+        parameters: SELECT request.jwt() ->> 'family_id' AS family_id
         data:
-          - SELECT * FROM member
-          - SELECT * FROM family
-          - SELECT * FROM task_list
-          - SELECT * FROM task
+          - SELECT * FROM family WHERE id = bucket.family_id
+          - SELECT * FROM member WHERE family_id = bucket.family_id
+          - SELECT * FROM task_list WHERE family_id = bucket.family_id
+          - SELECT * FROM task WHERE family_id = bucket.family_id
 
 # Settings for client authentication
 client_auth:
